@@ -11,3 +11,12 @@ Route::get('/user', function (Request $request) {
 Route::group(['prefix' => 'blog'], function () {
     Route::apiResource('posts', \App\Http\Controllers\Api\Blog\PostController::class)->names('blog.posts');
 });
+
+//Адмінка
+Route::group(['prefix' => 'admin/blog'], function () {
+    $methods = ['index', 'store', 'update'];
+
+    Route::apiResource('categories', \App\Http\Controllers\Api\Blog\Admin\CategoryController::class)
+        ->only($methods)
+        ->names('blog.admin.categories');
+});
