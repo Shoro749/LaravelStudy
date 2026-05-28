@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Blog\Admin;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class CategoryController extends BaseController
 {
@@ -30,19 +31,27 @@ class CategoryController extends BaseController
             $data['slug'] = Str::slug($data['title']);
         }
 
-        $item = BlogCategory::create($data);
+        try {
+            $item = BlogCategory::create($data);
 
-        if ($item) {
-            return [
-                'success' => true,
-                'message' => 'Категорію успішно створено',
-                'data' => $item
-            ];
-        } else {
-            return [
+            if ($item) {
+                return [
+                    'success' => true,
+                    'message' => 'Категорію успішно створено',
+                    'data' => $item
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Помилка створення категорії'
+                ];
+            }
+
+        } catch (UniqueConstraintViolationException $e) {
+            return response()->json([
                 'success' => false,
-                'message' => 'Помилка створення категорії'
-            ];
+                'message' => 'Помилка збереження: категорія з таким псевдонімом (slug) або назвою вже існує в базі даних.'
+            ], 400);
         }
     }
 
@@ -71,15 +80,27 @@ class CategoryController extends BaseController
             $data['slug'] = Str::slug($data['title']); //генеруємо псевдонім
         }
 
-        $result = $item->update($data);  //оновлюємо дані об'єкта і зберігаємо в БД
+        try {
+            $result = $item->update($data);  //оновлюємо дані об'єкта і зберігаємо в БД
 
-        if ($result) {
-            return [
-                'success' => true,
-                'message' => 'Успішно збережено'
+            if ($result) {
+                return [
+                    'success' => true,
+                    'message' => 'Категорію успішно створено',
+                    'data' => $item
                 ];
-        } else {
-            return ['message' => 'Помилка збереження'];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Помилка створення категорії'
+                ];
+            }
+
+        } catch (UniqueConstraintViolationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Помилка збереження: категорія з таким псевдонімом (slug) або назвою вже існує в базі даних.'
+            ], 400);
         }
     }
 
