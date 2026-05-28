@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Api\Blog\Admin;
 
 use App\Models\BlogCategory;
-use Illuminate\Http\Request;
+use App\Http\Requests\BlogCategoryCreateRequest;
+use App\Http\Requests\BlogCategoryUpdateRequest;
 use Illuminate\Support\Str;
 use Illuminate\Database\UniqueConstraintViolationException;
 
@@ -23,7 +24,7 @@ class CategoryController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BlogCategoryCreateRequest $request)
     {
         $data = $request->all();
 
@@ -66,7 +67,7 @@ class CategoryController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(BlogCategoryUpdateRequest $request, $id)
     {
         $item = BlogCategory::find($id);
 
@@ -86,20 +87,20 @@ class CategoryController extends BaseController
             if ($result) {
                 return [
                     'success' => true,
-                    'message' => 'Категорію успішно створено',
+                    'message' => 'Категорію успішно змінено',
                     'data' => $item
                 ];
             } else {
                 return [
                     'success' => false,
-                    'message' => 'Помилка створення категорії'
+                    'message' => 'Помилка редагування категорії'
                 ];
             }
 
         } catch (UniqueConstraintViolationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Помилка збереження: категорія з таким псевдонімом (slug) або назвою вже існує в базі даних.'
+                'message' => 'Помилка редагуванння: категорія з таким псевдонімом (slug) або назвою вже існує в базі даних.'
             ], 400);
         }
     }
