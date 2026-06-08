@@ -36,10 +36,6 @@ class CategoryController extends BaseController
     {
         $data = $request->all();
 
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
-        }
-
         try {
             $item = BlogCategory::create($data);
 
@@ -85,10 +81,6 @@ class CategoryController extends BaseController
         }
 
         $data = $request->all(); //отримаємо масив даних, які надійшли з форми
-
-        if (empty($data['slug'])) { //якщо псевдонім порожній
-            $data['slug'] = Str::slug($data['title']); //генеруємо псевдонім
-        }
 
         try {
             $result = $item->update($data);  //оновлюємо дані об'єкта і зберігаємо в БД
