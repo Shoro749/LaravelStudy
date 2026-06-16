@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Blog\Admin;
 
+use App\Http\Resources\Api\Blog\Admin\PostResource;
 use App\Jobs\BlogPostAfterCreateJob;
 use App\Jobs\BlogPostAfterDeleteJob;
 use App\Models\BlogPost;
@@ -28,8 +29,7 @@ class PostController extends BaseController
     public function index()
     {
         $paginator = $this->blogPostRepository->getAllWithPaginate();
-
-        return $paginator;
+        return PostResource::collection($paginator);
     }
 
     /**
@@ -61,9 +61,15 @@ class PostController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $item = $this->blogPostRepository->getEdit($id);
+
+        if (empty($item)) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        return new PostResource($item);
     }
 
     /**

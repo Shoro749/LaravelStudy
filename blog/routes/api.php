@@ -15,16 +15,15 @@ Route::group(['prefix' => 'blog'], function () {
 
 //Адмінка
 Route::group(['prefix' => 'admin/blog'], function () {
-    $methods = ['index', 'store', 'update'];
+    // Масив $methods більше не потрібен для категорій, якщо вони повноцінні
 
-    //BlogCategory
+    // BlogCategory
     Route::apiResource('categories', \App\Http\Controllers\Api\Blog\Admin\CategoryController::class)
-        ->only($methods)
         ->names('blog.admin.categories');
 
-    //BlogPost
+    // BlogPost
     Route::apiResource('posts', \App\Http\Controllers\Api\Blog\Admin\PostController::class)
-        ->except(['show']) //не робити маршрут для метода show
+        ->except(['show']) // не робити маршрут для метода show
         ->names('blog.admin.posts');
 });
 

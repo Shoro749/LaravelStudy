@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Blog\Admin;
 
+use App\Http\Resources\Api\Blog\Admin\CategoryResource;
 use App\Models\BlogCategory;
 use App\Repositories\BlogCategoryRepository;
 use App\Http\Requests\BlogCategoryCreateRequest;
@@ -25,8 +26,7 @@ class CategoryController extends BaseController
 //      dd(__METHOD__);
 //        $paginator = BlogCategory::paginate(5);
         $paginator = $this->blogCategoryRepository->getAllWithPaginate(5);
-
-        return $paginator;
+        return CategoryResource::collection($paginator);
     }
 
     /**
@@ -63,9 +63,15 @@ class CategoryController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        dd(__METHOD__);
+        $item = $this->blogCategoryRepository->getEdit($id);
+
+        if (empty($item)) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        return new CategoryResource($item);
     }
 
     /**
@@ -111,6 +117,20 @@ class CategoryController extends BaseController
      */
     public function destroy(string $id)
     {
+        $result = BlogCategory::destroy($id); //софт деліт, запис лишається
 
+        //$result = BlogPost::find($id)->forceDelete(); //повне видалення з БД
+
+        if ($result) {
+            return response()->json([
+                'success' => true,
+                'message' => "Запис id=[{$id}] успішно видалено"
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Помилка при видаленні запису'
+            ], 500);
+        }
     }
 }
